@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Expense</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #6eeaec; /* Solid green background */
+            color: #000000; /* Black text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #FFFFFF; /* White background */
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 500px;
+            text-align: center;
+            position: relative; /* For absolute positioning of logout button */
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #000000; /* Black text */
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background-color: #FFFFFF; /* White background */
+            border: 1px solid #000000; /* Black border */
+        }
+
+        .input-container i {
+            color: #000000; /* Black for icons */
+            font-size: 18px; /* Adjust icon size if needed */
+            padding: 10px; /* Space around the icon */
+        }
+
+        .input-container input,
+        .input-container select {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #FFFFFF; /* White background */
+            color: #000000; /* Black text */
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #0099CC; /* Coral blue button */
+            color: #FFFFFF; /* White text */
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px; /* Space between buttons */
+        }
+
+        button:hover {
+            background-color: #007AB8; /* Darker coral blue */
+        }
+
+        .logout-button {
+            background-color: #ff4d4d; /* Red color for logout */
+            color: #FFFFFF; /* White text */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            position: absolute; /* Position button absolutely */
+            top: 20px; /* Distance from the top */
+            right: 20px; /* Distance from the right */
+        }
+
+        .logout-button:hover {
+            background-color: #e60000; /* Darker red for hover */
+        }
+
+        .status-approved {
+            color: #4caf50; /* Green text for approved */
+        }
+
+        .status-rejected {
+            color: #f44336; /* Red text for rejected */
+        }
+
+        .expense-image {
+            max-width: 100px; /* Limit image width */
+            height: auto;
+            background-color: #FFFFFF; /* White background for better visibility */
+            border: 1px solid #ddd; /* Light border to define image area */
+            padding: 5px; /* Space around the image */
+        }
+
+        a {
+            color: #0099CC; /* Coral blue for links */
+        }
+
+        a button {
+            background-color: #FFFFFF; /* White background */
+            color: #0099CC; /* Coral blue text */
+        }
+
+        a button:hover {
+            background-color: #f1f1f1; /* Slightly darker white */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Edit Expense</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save Changes</button>
+            <a href="{% url 'staff_dashboard' %}">
+                <button type="button">Cancel</button>
+            </a>
+        </form>
+    </div>
+</body>
+</html>

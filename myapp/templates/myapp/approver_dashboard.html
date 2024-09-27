@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Approver Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #6eeaec; /* Solid green background */
+            color: #000000; /* Black text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative; /* For absolute positioning of logout button */
+        }
+        .container {
+            background-color: #FFFFFF; /* White background */
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 1200px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #000000; /* Black text */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #000000; /* Black border */
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #0099CC; /* Coral blue */
+        }
+        button {
+            background-color: #0099CC; /* Coral blue */
+            color: #FFFFFF; /* White text */
+            padding: 8px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 20px;
+        }
+        button:hover {
+            background-color: #007AB8; /* Darker coral blue */
+        }
+        .approve-button {
+            background-color: #4caf50; /* Green for approve */
+            color: #FFFFFF; /* White text */
+        }
+        .reject-button {
+            background-color: #f44336; /* Red for reject */
+            color: #FFFFFF; /* White text */
+        }
+        .approve-button:hover {
+            background-color: #45a049; /* Darker green */
+        }
+        .reject-button:hover {
+            background-color: #d32f2f; /* Darker red */
+        }
+        .logout-button {
+            background-color: #ff4d4d; /* Red color for logout */
+            color: #FFFFFF; /* White text */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            position: absolute; /* Position button absolutely */
+            top: 20px; /* Distance from the top */
+            right: 20px; /* Distance from the right */
+        }
+        .logout-button:hover {
+            background-color: #e60000; /* Darker red for hover */
+        }
+        .status-approved {
+            color: #4caf50; /* Green text for approved */
+        }
+        .status-rejected {
+            color: #f44336; /* Red text for rejected */
+        }
+        .expense-image {
+            max-width: 100px; /* Limit image width */
+            height: auto;
+            cursor: pointer;
+        }
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.8); /* Black w/ opacity */
+            display: flex; /* Flex to center content */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+        }
+        .modal-content {
+            max-width: 90%; /* Limit the maximum width */
+            max-height: 90%; /* Limit the maximum height */
+            position: relative; /* For positioning close button */
+        }
+        .modal-content img {
+            width: 100%; /* Responsive image width */
+            height: auto; /* Maintain aspect ratio */
+        }
+        .close {
+            position: absolute; /* Position relative to modal-content */
+            top: 10px; /* Distance from the top */
+            right: 10px; /* Distance from the right */
+            color: #ff0000; /* Red color for close button */
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5); /* Background color for better visibility */
+            border-radius: 50%;
+            padding: 5px;
+        }
+        .close:hover,
+        .close:focus {
+            color: #ffffff; /* White color for hover */
+            text-decoration: none;
+        }
+        .presence-toggle {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .presence-toggle input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .save-message {
+            margin-left: 10px;
+            color: #4caf50; /* Green text for saved message */
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
+
+    <div class="container">
+        <h1>Approver Dashboard</h1>
+        <p>Logged in as: {{ logged_in_user }}</p>
+
+        <!-- Presence Toggle Section -->
+        <div class="presence-toggle">
+            <input type="checkbox" id="presence-toggle" {% if user.userprofile.is_present %}checked{% endif %}>
+            <label for="presence-toggle">PRESENT</label>
+            <button id="save-presence">Save</button>
+            <span id="save-message" class="save-message">Saved</span>
+        </div>
+
+        <!-- Expense Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr id="expense-{{ expense.id }}">
+                    <td>{{ expense.date }}</td>
+                    <td>{{ expense.amount }}</td>
+                    <td>{{ expense.category }}</td>
+                    <td>{{ expense.description }}</td>
+                    <td>
+                        {% if expense.status == 'approved' %}
+                            <span class="status-approved">{{ expense.status|capfirst }}</span>
+                        {% elif expense.status == 'rejected' %}
+                            <span class="status-rejected">{{ expense.status|capfirst }}</span>
+                        {% else %}
+                            {{ expense.status|capfirst }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if expense.image %}
+                            <img src="{{ expense.image.url }}" alt="Expense Image" class="expense-image" onclick="openModal('{{ expense.image.url }}')">
+                        {% else %}
+                            No Image
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if expense.status == 'pending' %}
+                            <a href="{% url 'approve_expense' expense.id %}">
+                                <button class="approve-button">Approve</button>
+                            </a>
+                            <a href="{% url 'reject_expense' expense.id %}">
+                                <button class="reject-button">Reject</button>
+                            </a>
+                        {% elif expense.status == 'approved' %}
+                            <button class="approve-button" disabled>Approved</button>
+                        {% elif expense.status == 'rejected' %}
+                            <button class="reject-button" disabled>Rejected</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No expenses to review.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Modal for Image -->
+        <div id="imageModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <img id="modalImage" src="" alt="Expense Image">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to open the modal
+        function openModal(imageUrl) {
+            var modal = document.getElementById('imageModal');
+            var modalImage = document.getElementById('modalImage');
+            modal.style.display = 'flex';
+            modalImage.src = imageUrl;
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            var modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+        }
+
+        // JavaScript to handle the presence toggle and save button
+        document.getElementById('save-presence').addEventListener('click', function() {
+            var isPresent = document.getElementById('presence-toggle').checked;
+
+            fetch("{% url 'toggle_presence' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ is_present: isPresent })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var saveMessage = document.getElementById('save-message');
+                saveMessage.style.display = 'inline'; // Show the "Saved" message
+                setTimeout(() => {
+                    saveMessage.style.display = 'none'; // Hide it after 2 seconds
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

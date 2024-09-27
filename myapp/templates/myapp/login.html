@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap">
+    <style>
+        body {
+            background-color: #6eeaec; /* Solid green background */
+            color: #000000; /* Black text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .heading {
+            font-size: 40px; /* Increase font size */
+            font-weight: bold; /* Make text bold */
+            margin-bottom: 40px; /* Increase space between heading and container */
+            color: #000000; /* Black text */
+            text-align: center;
+            font-family: 'Montserrat', sans-serif; /* Apply Montserrat font */
+        }
+
+        .container {
+            background-color: #FFFFFF; /* White background */
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 350px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            margin-top: 10px;
+            color: #000000; /* Black text */
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background-color: #E6F7F9; /* Light teal */
+        }
+
+        .input-container i {
+            color: #0099CC; /* Coral blue */
+            font-size: 18px; /* Adjust icon size if needed */
+            padding: 10px; /* Space around the icon */
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #F5F5F5; /* Light gray */
+            color: #000000; /* Black text */
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #0099CC; /* Coral blue */
+            color: #FFFFFF; /* White text */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #007AB8; /* Darker coral blue */
+        }
+
+        .links {
+            margin-top: 20px;
+            margin-left: 50px;
+        }
+
+        .links a {
+            text-decoration: none;
+            margin-right: 30px;
+            color: #0099CC; /* Coral blue */
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="heading">ExpensePro Flow</div>
+    <div class="container">
+        <h1>Login</h1>
+        <form method="post">
+            {% csrf_token %}
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            <div class="input-container">
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Username" name="username" required>
+            </div>
+            <div class="input-container">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div class="links">
+            <a href="#">Remember me</a>
+            <a href="#">Forgot password?</a>
+        </div>
+    </div>
+</body>
+</html>

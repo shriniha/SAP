@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #6eeaec; /* Solid green background */
+            color: #000000; /* Black text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            position: relative; /* For absolute positioning of logout button */
+        }
+
+        .container {
+            background-color: #FFFFFF; /* White background */
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 800px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #000000; /* Black text */
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background-color: #FFFFFF; /* White background */
+            border: 1px solid #000000; /* Black border */
+        }
+
+        .input-container i {
+            color: #000000; /* Black for icons */
+            font-size: 18px; /* Adjust icon size if needed */
+            padding: 10px; /* Space around the icon */
+        }
+
+        .input-container input,
+        .input-container select {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #FFFFFF; /* White background */
+            color: #000000; /* Black text */
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #0099CC; /* Coral blue button */
+            color: #FFFFFF; /* White text */
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #007AB8; /* Darker coral blue */
+        }
+
+        .logout-button {
+            background-color: #ff4d4d; /* Red color for logout */
+            color: #FFFFFF; /* White text */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            position: absolute; /* Position button absolutely */
+            top: 20px; /* Distance from the top */
+            right: 20px; /* Distance from the right */
+        }
+
+        .logout-button:hover {
+            background-color: #e60000; /* Darker red for hover */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #000000; /* Black border */
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            color: #000000; /* Black text */
+        }
+
+        th {
+            background-color: #0099CC; /* Coral blue background */
+            color: #FFFFFF; /* White text */
+        }
+
+        .status-box {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #FFFFFF; /* White text */
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background-color: #f1c40f; /* Yellow background for pending */
+            color: #000000; /* Black text */
+        }
+
+        .status-approved {
+            background-color: #4caf50; /* Green background for approved */
+        }
+
+        .status-rejected {
+            background-color: #f44336; /* Red background for rejected */
+        }
+
+        a {
+            color: #0099CC; /* Coral blue for links */
+        }
+
+        a:hover {
+            color: #007AB8; /* Darker coral blue on hover */
+        }
+
+        .edit-button {
+            font-size: 18px; /* Icon size */
+            color: #5580ff; /* Blue color for edit */
+            text-decoration: none;
+        }
+
+        .edit-button:hover {
+            color: #e6b800; /* Darker yellow for hover */
+        }
+
+        .disabled-edit-button {
+            font-size: 18px; /* Icon size */
+            color: #ddd; /* Grey color for disabled state */
+            pointer-events: none; /* Prevent clicks */
+        }
+
+        .message {
+            background-color: #ffffff; /* White background */
+            color: #000000; /* Black text */
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .message.success {
+            background-color: #4caf50; /* Green background for success */
+            color: #FFFFFF; /* White text */
+        }
+
+        .message.error {
+            background-color: #f44336; /* Red background for errors */
+            color: #FFFFFF; /* White text */
+        }
+    </style>
+</head>
+<body>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-button">Logout</button>
+    </form>
+
+    <div class="container">
+        <h1>Expense Dashboard</h1>
+        <p>Logged in as: {{ logged_in_user }}</p>
+
+        {% if messages %}
+            <div class="message {% for message in messages %}{{ message.tags }}{% endfor %}">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-container">
+                <i class="fas fa-calendar-alt"></i>
+                {{ form.date }}
+            </div>
+            <div class="input-container">
+                <i class="fas fa-dollar-sign"></i>
+                {{ form.amount }}
+            </div>
+            <div class="input-container">
+                <i class="fas fa-tags"></i>
+                {{ form.category }}
+            </div>
+            <div class="input-container">
+                <i class="fas fa-file-image"></i>
+                {{ form.image }}
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Bill Image</th>
+                    <th>Status</th>
+                    <th>Actions</th> <!-- New header for actions -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                <tr>
+                    <td>{{ expense.date }}</td>
+                    <td>{{ expense.amount }}</td>
+                    <td>{{ expense.category }}</td>
+                    <td>{{ expense.description }}</td>
+                    <td>
+                        {% if expense.image %}
+                            <a href="{{ expense.image.url }}" target="_blank">View Image</a>
+                        {% else %}
+                            No Image
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if expense.status == 'pending' %}
+                            <span class="status-box status-pending">Pending</span>
+                        {% elif expense.status == 'approved' %}
+                            <span class="status-box status-approved">Approved</span>
+                        {% elif expense.status == 'rejected' %}
+                            <span class="status-box status-rejected">Rejected</span>
+                        {% else %}
+                            <span class="status-box">Unknown</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if expense.status == 'pending' %}
+                            <a href="{% url 'edit_expense' expense.id %}" class="edit-button">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        {% else %}
+                            <span class="disabled-edit-button" title="Cannot edit - expense is {{ expense.status }}">
+                                <i class="fas fa-edit"></i>
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No expenses recorded.</td> <!-- Adjust colspan to 7 -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
